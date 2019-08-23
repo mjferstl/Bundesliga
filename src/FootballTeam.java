@@ -4,11 +4,16 @@ public class FootballTeam {
 	private String teamName, shortName;
 	private String iconUrl;
 	private int points = -1;
-	private int goals, opponentGoals, matches, won, lost, draw, goalDiff;
+	private int goals, opponentGoals, matches, matchesWon, matchesLost, matchesDraw, goalDiff;
 	
 	public final static int STRING_WIDTH_TEAMNAME = 35;
 	public final static int STRING_WIDTH_POINTS = 3;
 	public final static int STRING_WIDTH_GOALS = 3;
+	public final static int STRING_WIDTH_MATCHES = 2;
+	public final static int STRING_WIDTH_MATCHES_WON = 2;
+	public final static int STRING_WIDTH_MATCHES_DRAW = 2;
+	public final static int STRING_WIDTH_MATCHES_LOST = 2;
+	public final static int STRING_WIDTH_GOALS_DIFF = 3;
 	public final static String STRING_SEPARATOR = " | ";
 	
 	public FootballTeam() {}
@@ -65,28 +70,28 @@ public class FootballTeam {
 		this.matches = matches;
 	}
 
-	public int getWon() {
-		return won;
+	public int getMatchesWon() {
+		return matchesWon;
 	}
 
-	public void setWon(int won) {
-		this.won = won;
+	public void setMatchesWon(int won) {
+		this.matchesWon = won;
 	}
 
-	public int getLost() {
-		return lost;
+	public int getMatchesLost() {
+		return matchesLost;
 	}
 
-	public void setLost(int lost) {
-		this.lost = lost;
+	public void setMatchesLost(int lost) {
+		this.matchesLost = lost;
 	}
 
-	public int getDraw() {
-		return draw;
+	public int getMatchesDraw() {
+		return matchesDraw;
 	}
 
-	public void setDraw(int draw) {
-		this.draw = draw;
+	public void setMatchesDraw(int draw) {
+		this.matchesDraw = draw;
 	}
 
 	public int getGoalDiff() {
@@ -111,10 +116,18 @@ public class FootballTeam {
 			return this.teamName;
 		} else {
 			String sep = STRING_SEPARATOR;
-			String teamName = String.format("%" + STRING_WIDTH_TEAMNAME + "s", this.teamName);
+			String teamName = String.format("%-" + STRING_WIDTH_TEAMNAME + "s", this.teamName);
 			String points = String.format("%" + STRING_WIDTH_POINTS + "d", this.points);
 			String goals = String.format("%" + STRING_WIDTH_GOALS + "d", this.goals);
-			return teamName + sep + points + sep + goals;
+			String matches = String.format("%" + STRING_WIDTH_MATCHES + "s", this.matches);
+			String matchesWon = String.format("%" + STRING_WIDTH_MATCHES_WON + "s", this.matchesWon);
+			String matchesDraw = String.format("%" + STRING_WIDTH_MATCHES_DRAW + "s", this.matchesDraw);
+			String matchesLost = String.format("%" + STRING_WIDTH_MATCHES_LOST + "s", this.matchesLost);
+			String goalsDiff = String.format("%" + STRING_WIDTH_GOALS_DIFF + "s", this.goalDiff);
+			return teamName
+					+ sep + matches + sep + points + sep + goalsDiff
+					+ sep + matchesWon + sep + matchesDraw + sep + matchesLost
+					+ sep + goals; 
 		}
 	}
 }
