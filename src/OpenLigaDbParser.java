@@ -17,11 +17,12 @@ public class OpenLigaDbParser {
 
 	// Variables
 	// - Patterns
-	private static Pattern matchTimePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
+	private final static Pattern matchTimePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
+	private final static Pattern leagueNamePattern = Pattern.compile(".*(\\d{4})/(\\d{4})");
 
 	// - Strings
-	private static String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
-	private static String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/2019";
+	private final static String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
+	private final static String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
 
 
 	/**
@@ -42,9 +43,21 @@ public class OpenLigaDbParser {
 	public static List<FootballTeam> getBundesligaTable() {
 		// create new List
 		List<FootballTeam> table = new ArrayList<FootballTeam>();
+		String season = "";
+		
+		String jsonResponseCurrentMatchDay = getOpenLigaResponse(urlBundesliga1Matches);
+		JSONArray jsonArray = new JSONArray(jsonResponseCurrentMatchDay);
+		String leagueName = jsonArray.getJSONObject(0).getString("LeagueName");
+		Matcher m = leagueNamePattern.matcher(leagueName); 
+		if (m.matches()) {
+			season = m.group(1).trim();
+		} else {
+			System.out.print("\n** Error when parsing current season of Bundesliga **\n");
+			return table;
+		}
 
 		// get table from OpenLigaDb response
-		String jsonResponse = getOpenLigaResponse(urlBundesliga1Table2019);
+		String jsonResponse = getOpenLigaResponse(urlBundesliga1Table2019 + season);
 		table = getTableFromJsonResponse(jsonResponse);			
 
 		return table;		
@@ -243,9 +256,9 @@ public class OpenLigaDbParser {
 		ft.setOpponentGoals(opponentGoals);
 		ft.setGoalDiff(goalDiff);
 		ft.setMatches(matches);
-		ft.setWon(matchesWon);
-		ft.setLost(matchesLost);
-		ft.setDraw(matchesDraw);
+		ft.setMatchesWon(matchesWon);
+		ft.setMatchesLost(matchesLost);
+		ft.setMatchesDraw(matchesDraw);
 
 		return ft;		
 	}
@@ -264,17 +277,45 @@ public class OpenLigaDbParser {
 
 	public static void printTable(List<FootballTeam> table) {
 
+		final int STRING_WIDTH_RANK = 3;
+		
 		// print header
 		String sep = FootballTeam.STRING_SEPARATOR;
-		String team = String.format("%" + FootballTeam.STRING_WIDTH_TEAMNAME + "s", "Teamname");
+		String rank = String.format("%" + STRING_WIDTH_RANK + "s", " ");
+		String team = String.format("%-" + FootballTeam.STRING_WIDTH_TEAMNAME + "s", "Mannschaft");
+		String matches = String.format("%-" + FootballTeam.STRING_WIDTH_MATCHES + "s", "Sp");
 		String points = String.format("%" + FootballTeam.STRING_WIDTH_POINTS + "s", "Pkt");
 		String goals = String.format("%" + FootballTeam.STRING_WIDTH_GOALS + "s", "Tor");
-		System.out.println(team + sep + points + sep + goals);
-		System.out.println("");
+		String matchesWon = String.format("%" + FootballTeam.STRING_WIDTH_MATCHES_WON + "s", "S");
+		String matchesDraw = String.format("%" + FootballTeam.STRING_WIDTH_MATCHES_DRAW + "s", "U");
+		String matchesLost = String.format("%" + FootballTeam.STRING_WIDTH_MATCHES_LOST + "s", "N");
+		String goalsDiff = String.format("%" + FootballTeam.STRING_WIDTH_GOALS_DIFF + "s", "TD");
+		
+		// add empty line at top
+		System.out.print("\n");
+		
+		// print header and separator
+		System.out.println(rank + sep + team + sep + matches + sep + points + sep + goalsDiff
+				+ sep + matchesWon + sep + matchesDraw + sep + matchesLost + sep + goals);
+		System.out.println("-".repeat(STRING_WIDTH_RANK) 
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_TEAMNAME) 
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES)
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_POINTS)
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_GOALS_DIFF)				
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES_WON)
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES_DRAW)
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES_LOST)
+				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_GOALS));
 		
 		// loop over all entries and print them to the console
 		for (int i=0; i<table.size(); i++) {
-			System.out.println(table.get(i).toString());
+			System.out.print(String.format("%" + STRING_WIDTH_RANK + "s", i+1));
+			System.out.print(sep);
+			System.out.print(table.get(i).toString());
+			System.out.print("\n");
 		}
+		
+		// add empty line at bottom
+		System.out.print("\n");
 	}
 }
