@@ -1,3 +1,4 @@
+package mfdevelopement.bundesliga;
 
 public class FootballTeam {
 	

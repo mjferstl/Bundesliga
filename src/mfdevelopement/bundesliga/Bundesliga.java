@@ -1,3 +1,4 @@
+package mfdevelopement.bundesliga;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +12,13 @@ public class Bundesliga {
 
 	public static void main(String[] args) {
 		
+		OpenLigaDbParser openLigaDbParser = new OpenLigaDbParser();
 		// get current Bundesliga matches
-		matches = OpenLigaDbParser.getCurrentBundesligaMatches();		
-		OpenLigaDbParser.printMatches(matches);
+		matches = openLigaDbParser.getCurrentBundesligaMatches();		
+		openLigaDbParser.printMatches(matches);
 		
 		// get table of Bundesliga
-		bundesligaTable = OpenLigaDbParser.getBundesligaTable();
-		OpenLigaDbParser.printTable(bundesligaTable);
+		bundesligaTable = openLigaDbParser.getBundesligaTable();
+		openLigaDbParser.printTable(bundesligaTable);
 	}	
 }

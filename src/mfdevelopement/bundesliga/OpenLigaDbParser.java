@@ -1,3 +1,4 @@
+package mfdevelopement.bundesliga;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -17,19 +18,19 @@ public class OpenLigaDbParser {
 
 	// Variables
 	// - Patterns
-	private final static Pattern matchTimePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
-	private final static Pattern leagueNamePattern = Pattern.compile(".*(\\d{4})/(\\d{4})");
+	private final Pattern matchTimePattern = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})");
+	private final Pattern leagueNamePattern = Pattern.compile(".*(\\d{4})/(\\d{4})");
 
 	// - Strings
-	private final static String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
-	private final static String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
+	private final String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
+	private final String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
 
 
 	/**
 	 * method to get all current Bundesliga matches from OpenLigaDB
 	 * @return List containing objects of type match
 	 */
-	public static List<Match> getCurrentBundesligaMatches() {
+	public List<Match> getCurrentBundesligaMatches() {
 		// create new List
 		List<Match> matches = new ArrayList<Match>();
 
@@ -40,11 +41,11 @@ public class OpenLigaDbParser {
 		return matches;
 	}
 
-	public static List<FootballTeam> getBundesligaTable() {
+	public List<FootballTeam> getBundesligaTable() {
 		// create new List
 		List<FootballTeam> table = new ArrayList<FootballTeam>();
 		String season = "";
-		
+
 		String jsonResponseCurrentMatchDay = getOpenLigaResponse(urlBundesliga1Matches);
 		JSONArray jsonArray = new JSONArray(jsonResponseCurrentMatchDay);
 		String leagueName = jsonArray.getJSONObject(0).getString("LeagueName");
@@ -68,7 +69,7 @@ public class OpenLigaDbParser {
 	 * @param url: String containing the url for the request
 	 * @return: String containing the response in JSON format
 	 */
-	private static String getOpenLigaResponse(String url) {		
+	private String getOpenLigaResponse(String url) {		
 		URL urlObject = getJsonResponse(url);		
 		String response = readResponse(urlObject);		
 		return response;
@@ -79,7 +80,7 @@ public class OpenLigaDbParser {
 	 * @param urlString: String containing the url for the request
 	 * @return: Object of type URL
 	 */
-	private static URL getJsonResponse(String urlString) {
+	private URL getJsonResponse(String urlString) {
 
 		// initialize local variables
 		URL url = null;
@@ -116,7 +117,7 @@ public class OpenLigaDbParser {
 	 * @param url: Object of type URL
 	 * @return: String containing the JSON response
 	 */
-	private static String readResponse(URL url) {
+	private String readResponse(URL url) {
 
 		String response = "";
 
@@ -141,14 +142,14 @@ public class OpenLigaDbParser {
 	 * @param jsonResponse
 	 * @return List of objects of type "Match"
 	 */
-	private static List<Match> getMatchesFromJsonResponse(String jsonResponse) {
+	private List<Match> getMatchesFromJsonResponse(String jsonResponse) {
 
 		List<Match> m = new ArrayList<Match>();
 		// Parse JSON Response		
 		JSONArray jsonArray = new JSONArray(jsonResponse);
 		for (int i=0; i<jsonArray.length(); i++) {
 			// add match to list
-			m.add(OpenLigaDbParser.JsonToMatch(jsonArray.getJSONObject(i)));					
+			m.add(JsonToMatch(jsonArray.getJSONObject(i)));					
 		}
 		return m;
 	}
@@ -159,38 +160,107 @@ public class OpenLigaDbParser {
 	 * @param jsonObject containing part of the JSON response from OpenLigaDB containing a match as JSONObject
 	 * @return: Object of type Match
 	 */
-	private static Match JsonToMatch(JSONObject jsonObject) {	
+	private Match JsonToMatch(JSONObject jsonObject) {	
+
+		Match match = new Match();
+		String homeTeamName, homeTeamShortName, homeTeamIconUrl;
+		String awayTeamName, awayTeamShortName, awayTeamIconUrl;
+		int goalsHomeTeamFinal = -1, goalsAwayTeamFinal = -1;
+		int goalsHomeTeamHalf = -1, goalsAwayTeamHalf = -1;
 
 		// ---- get entries of the JSONObject
 		// - home team
-		String homeTeamName = jsonObject.getJSONObject("Team1").get("TeamName").toString();
-		String homeTeamShortName = jsonObject.getJSONObject("Team1").get("ShortName").toString();
-		String homeTeamIconUrl = jsonObject.getJSONObject("Team1").get("TeamIconUrl").toString();		
-		// - away team
-		String awayTeamName = jsonObject.getJSONObject("Team2").get("TeamName").toString();
-		String awayTeamShortName = jsonObject.getJSONObject("Team2").get("ShortName").toString();
-		String awayTeamIconUrl = jsonObject.getJSONObject("Team2").get("TeamIconUrl").toString();
-
-		// - general 
-		String matchDateTime = jsonObject.getString("MatchDateTime");
-		boolean matchIsFinished = jsonObject.getBoolean("MatchIsFinished");
-
-
-		// ---- create objects for each team
+		JSONObject jsonObjectTeam1 = jsonObject.getJSONObject("Team1");
+		if (jsonObjectTeam1 != null) {
+			homeTeamName = getStringFromJSONObject(jsonObjectTeam1, "TeamName");	
+			homeTeamShortName = getStringFromJSONObject(jsonObjectTeam1, "ShortName");				
+			homeTeamIconUrl = getStringFromJSONObject(jsonObjectTeam1, "TeamIconUrl");
+		} else {
+			homeTeamName = "";
+			homeTeamShortName = "";
+			homeTeamIconUrl = "";
+		}
 		// home team
 		FootballTeam homeTeam = new FootballTeam(homeTeamName);
 		homeTeam.setIconUrl(homeTeamIconUrl);		
 		homeTeam.setShortName(homeTeamShortName);
+
+
+		// - away team
+		JSONObject jsonObjectTeam2 = jsonObject.getJSONObject("Team2");
+		if (jsonObjectTeam2 != null) {
+			awayTeamName = getStringFromJSONObject(jsonObjectTeam2, "TeamName");			
+			awayTeamShortName = getStringFromJSONObject(jsonObjectTeam2, "ShortName");	
+			awayTeamIconUrl = getStringFromJSONObject(jsonObjectTeam2, "TeamIconUrl");
+		} else {
+			awayTeamName = ""; 
+			awayTeamShortName = "";
+			awayTeamIconUrl = "";
+		}
 		// away team
 		FootballTeam awayTeam = new FootballTeam(awayTeamName);
 		awayTeam.setIconUrl(awayTeamIconUrl);
-		awayTeam.setShortName(awayTeamShortName);		
+		awayTeam.setShortName(awayTeamShortName);
 
-		// ---- create object of type Match and add teams and general information
-		Match match = new Match();
 		// add teams to match
 		match.setHomeTeam(homeTeam);
 		match.setAwayTeam(awayTeam);
+
+		// - general 
+		String matchDateTime = getStringFromJSONObject(jsonObject, "MatchDateTime");
+		boolean matchIsFinished = getBooleanFromJSONObject(jsonObject,"MatchIsFinished");
+
+		// Ergebnisse auslesen, sofern vorhanden
+		JSONArray jsonArrayMatchResults = jsonObject.getJSONArray("MatchResults");
+		if  (jsonArrayMatchResults != null && jsonArrayMatchResults.length() == 2) {
+			// Endergebnis
+			JSONObject jsonObjectFinalResult = jsonArrayMatchResults.getJSONObject(0);
+			goalsHomeTeamFinal = getIntFromJSONObject(jsonObjectFinalResult,"PointsTeam1"); 
+			goalsAwayTeamFinal = getIntFromJSONObject(jsonObjectFinalResult,"PointsTeam2"); 
+
+			// Halbzeit
+			JSONObject jsonObjectHalftime = jsonArrayMatchResults.getJSONObject(1);
+			goalsHomeTeamHalf = getIntFromJSONObject(jsonObjectHalftime,"PointsTeam1"); 
+			goalsAwayTeamHalf = getIntFromJSONObject(jsonObjectHalftime,"PointsTeam2");
+		}
+
+		// Tore auslesen, sofern vorhanden
+		JSONArray jsonArrayMatchGoals = jsonObject.getJSONArray("Goals");
+
+		// declare variables
+		int scoreHomeTeam = 0, scoreAwayTeam, matchMinute;
+		String goalGetterName;
+		boolean isPenalty, isOwnGoal, isOverTime;
+
+		if (jsonArrayMatchGoals != null) {
+
+			for (int i=0; i<jsonArrayMatchGoals.length(); i++) {
+				JSONObject jsonObjectGoal = jsonArrayMatchGoals.getJSONObject(i);
+				scoreHomeTeam = getIntFromJSONObject(jsonObjectGoal, "ScoreTeam1");
+				scoreAwayTeam = getIntFromJSONObject(jsonObjectGoal, "ScoreTeam2");
+				matchMinute = getIntFromJSONObject(jsonObjectGoal, "MatchMinute");
+				goalGetterName = getStringFromJSONObject(jsonObjectGoal, "GoalGetterName");
+				isPenalty = getBooleanFromJSONObject(jsonObjectGoal, "IsPenalty");
+				isOwnGoal = getBooleanFromJSONObject(jsonObjectGoal, "IsOwnGoal");
+				isOverTime = getBooleanFromJSONObject(jsonObjectGoal, "IsOvertime");
+
+				match.addMatchGoal(scoreHomeTeam, scoreAwayTeam, goalGetterName,matchMinute, isPenalty, isOwnGoal, isOverTime);
+			}
+		}
+
+		// add results to match
+		// - final
+		if (goalsHomeTeamFinal >= 0) 
+			match.setGoalsHomeTeamFinal(goalsHomeTeamFinal);
+		if (goalsAwayTeamFinal >= 0)
+			match.setGoalsAwayTeamFinal(goalsAwayTeamFinal);
+		// - half time
+		if (goalsHomeTeamHalf >= 0)
+			match.setGoalsHomeTeamHalf(goalsHomeTeamHalf);
+		if (goalsAwayTeamHalf >= 0)
+			match.setGoalsAwayTeamHalf(goalsAwayTeamHalf);		
+
+
 
 		// set boolean if match is finished
 		match.setFinished(matchIsFinished);					
@@ -213,7 +283,69 @@ public class OpenLigaDbParser {
 		return match;
 	}
 
-	private static List<FootballTeam> getTableFromJsonResponse(String jsonResponse) {
+
+	private String getStringFromJSONObject(JSONObject jsonObject, String key) {
+
+		String value;
+
+		// check if jsonObject is not NULL
+		if (jsonObject == null) {
+			value = "";
+			return value;
+		}
+
+		try {
+			value = jsonObject.getString(key);
+		} catch (Exception e) {
+			value = "";
+			System.out.println("* Fehler: Der Key " + key + " ist nicht vohanden");
+		}
+
+		return value;
+	}
+
+	private int getIntFromJSONObject(JSONObject jsonObject, String key) {
+
+		int value;
+
+		// check if jsonObject is not NULL
+		if (jsonObject == null) {
+			value = -999;
+			return value;
+		}
+
+		try {
+			value = jsonObject.getInt(key);
+		} catch (Exception e) {
+			value = -999;
+			System.out.println("* Fehler: Der Key " + key + " ist nicht vohanden");
+		}
+
+		return value;
+	}
+
+	private boolean getBooleanFromJSONObject(JSONObject jsonObject, String key) {
+
+		boolean boo = false;
+
+		// check if jsonObject is not NULL
+		if (jsonObject == null) {
+			boo = false;
+			return boo;
+		}
+
+		try {
+			boo = jsonObject.getBoolean(key);
+		} catch (Exception e) {
+			boo = false;
+			System.out.println("* Fehler: Der Key " + key + " ist nicht vohanden");
+		}
+
+		return boo;
+	}
+
+
+	private List<FootballTeam> getTableFromJsonResponse(String jsonResponse) {
 
 		// create new List
 		List<FootballTeam> table = new ArrayList<FootballTeam>();
@@ -228,24 +360,24 @@ public class OpenLigaDbParser {
 	}
 
 
-	private static FootballTeam JsonToFootballTeam(JSONObject jsonObject) {
+	private FootballTeam JsonToFootballTeam(JSONObject jsonObject) {
 
 		FootballTeam ft = new FootballTeam();
 
 		// parse information from JSONObject
 		// - Strings
-		String teamName = jsonObject.getString("TeamName");
-		String shortName = jsonObject.getString("ShortName");
-		String iconUrl = jsonObject.getString("TeamIconUrl");		
+		String teamName = getStringFromJSONObject(jsonObject, "TeamName");
+		String shortName = getStringFromJSONObject(jsonObject, "ShortName");
+		String iconUrl = getStringFromJSONObject(jsonObject, "TeamIconUrl");		
 		// - Integers
-		int points = jsonObject.getInt("Points");
-		int goals = jsonObject.getInt("Goals");
-		int opponentGoals = jsonObject.getInt("OpponentGoals");
-		int goalDiff = jsonObject.getInt("GoalDiff");
-		int matches = jsonObject.getInt("Matches");
-		int matchesWon = jsonObject.getInt("Won");
-		int matchesLost = jsonObject.getInt("Lost");
-		int matchesDraw = jsonObject.getInt("Draw");
+		int points = getIntFromJSONObject(jsonObject, "Points");
+		int goals = getIntFromJSONObject(jsonObject, "Goals");
+		int opponentGoals = getIntFromJSONObject(jsonObject, "OpponentGoals");
+		int goalDiff = getIntFromJSONObject(jsonObject, "GoalDiff");
+		int matches = getIntFromJSONObject(jsonObject, "Matches");
+		int matchesWon = getIntFromJSONObject(jsonObject, "Won");
+		int matchesLost = getIntFromJSONObject(jsonObject, "Lost");
+		int matchesDraw = getIntFromJSONObject(jsonObject, "Draw");
 
 		// add attributes to the object
 		ft.setTeamName(teamName);
@@ -267,7 +399,7 @@ public class OpenLigaDbParser {
 	 * print all elements of a List containing objects of type Match
 	 * @param matchesList: List<Match>
 	 */
-	public static void printMatches(List<Match> matchesList) {
+	public void printMatches(List<Match> matchesList) {
 
 		// loop over all entries and print them to the console
 		for (int i=0; i<matchesList.size(); i++) {
@@ -275,10 +407,10 @@ public class OpenLigaDbParser {
 		}
 	}
 
-	public static void printTable(List<FootballTeam> table) {
+	public void printTable(List<FootballTeam> table) {
 
 		final int STRING_WIDTH_RANK = 3;
-		
+
 		// print header
 		String sep = FootballTeam.STRING_SEPARATOR;
 		String rank = String.format("%" + STRING_WIDTH_RANK + "s", " ");
@@ -290,10 +422,10 @@ public class OpenLigaDbParser {
 		String matchesDraw = String.format("%" + FootballTeam.STRING_WIDTH_MATCHES_DRAW + "s", "U");
 		String matchesLost = String.format("%" + FootballTeam.STRING_WIDTH_MATCHES_LOST + "s", "N");
 		String goalsDiff = String.format("%" + FootballTeam.STRING_WIDTH_GOALS_DIFF + "s", "TD");
-		
+
 		// add empty line at top
 		System.out.print("\n");
-		
+
 		// print header and separator
 		System.out.println(rank + sep + team + sep + matches + sep + points + sep + goalsDiff
 				+ sep + matchesWon + sep + matchesDraw + sep + matchesLost + sep + goals);
@@ -306,7 +438,7 @@ public class OpenLigaDbParser {
 				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES_DRAW)
 				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_MATCHES_LOST)
 				+ sep + "-".repeat(FootballTeam.STRING_WIDTH_GOALS));
-		
+
 		// loop over all entries and print them to the console
 		for (int i=0; i<table.size(); i++) {
 			System.out.print(String.format("%" + STRING_WIDTH_RANK + "s", i+1));
@@ -314,7 +446,7 @@ public class OpenLigaDbParser {
 			System.out.print(table.get(i).toString());
 			System.out.print("\n");
 		}
-		
+
 		// add empty line at bottom
 		System.out.print("\n");
 	}
