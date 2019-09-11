@@ -13,6 +13,7 @@ public class Bundesliga {
 	public static void main(String[] args) {
 		
 		OpenLigaDbParser openLigaDbParser = new OpenLigaDbParser();
+		
 		// get current Bundesliga matches
 		matches = openLigaDbParser.getCurrentBundesligaMatches();		
 		openLigaDbParser.printMatches(matches);

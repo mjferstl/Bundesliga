@@ -24,6 +24,8 @@ public class OpenLigaDbParser {
 	// - Strings
 	private final String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
 	private final String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
+	
+	public static final int VALUE_NOT_SET = -999;
 
 
 	/**
@@ -165,8 +167,8 @@ public class OpenLigaDbParser {
 		Match match = new Match();
 		String homeTeamName, homeTeamShortName, homeTeamIconUrl;
 		String awayTeamName, awayTeamShortName, awayTeamIconUrl;
-		int goalsHomeTeamFinal = -1, goalsAwayTeamFinal = -1;
-		int goalsHomeTeamHalf = -1, goalsAwayTeamHalf = -1;
+		int goalsHomeTeamFinal = VALUE_NOT_SET, goalsAwayTeamFinal = VALUE_NOT_SET;
+		int goalsHomeTeamHalf = VALUE_NOT_SET, goalsAwayTeamHalf = VALUE_NOT_SET;
 
 		// ---- get entries of the JSONObject
 		// - home team
@@ -310,14 +312,14 @@ public class OpenLigaDbParser {
 
 		// check if jsonObject is not NULL
 		if (jsonObject == null) {
-			value = -999;
+			value = VALUE_NOT_SET;
 			return value;
 		}
 
 		try {
 			value = jsonObject.getInt(key);
 		} catch (Exception e) {
-			value = -999;
+			value = VALUE_NOT_SET;
 			System.out.println("* Fehler: Der Key " + key + " ist nicht vohanden");
 		}
 

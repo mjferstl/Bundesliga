@@ -8,8 +8,8 @@ public class Match {
 	private FootballTeam homeTeam, awayTeam;
 	//private String homeTeam, awayTeam;
 	private int matchId;
-	private int goalsHomeTeamFinal = -1, goalsAwayTeamFinal = -1;
-	private int goalsHomeTeamHalf = -1, goalsAwayTeamHalf = -1;
+	private int goalsHomeTeamFinal = OpenLigaDbParser.VALUE_NOT_SET, goalsAwayTeamFinal = OpenLigaDbParser.VALUE_NOT_SET;
+	private int goalsHomeTeamHalf = OpenLigaDbParser.VALUE_NOT_SET, goalsAwayTeamHalf = OpenLigaDbParser.VALUE_NOT_SET;
 	private List<MatchGoal> matchGoals = new ArrayList<MatchGoal>();
 	private String leagueName;
 	private boolean isFinished;
@@ -22,7 +22,13 @@ public class Match {
 	@Override
 	public String toString() {
 		String encounterString = String.format("%-40s", this.homeTeam.toString() + " vs. " + this.awayTeam.toString());
-		String resultString = String.format("%5s", String.format("%2s", this.goalsHomeTeamFinal) + "-" + this.goalsAwayTeamFinal);
+		
+		String resultString;
+		if ((this.goalsHomeTeamFinal != OpenLigaDbParser.VALUE_NOT_SET) && (this.goalsAwayTeamFinal != OpenLigaDbParser.VALUE_NOT_SET))
+			resultString = String.format("%5s", String.format("%2s", this.goalsHomeTeamFinal) + "-" + this.goalsAwayTeamFinal);
+		else {
+			resultString = "";
+		}
 		String goalsString = "";
 		for (int i=0; i<matchGoals.size(); i++) {
 			MatchGoal matchGoal = matchGoals.get(i);
