@@ -24,8 +24,9 @@ public class OpenLigaDbParser {
 	// - Strings
 	private final String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
 	private final String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
-	
+
 	public static final int VALUE_NOT_SET = -999;
+	private int bundesligaSeason = 0;
 
 
 	/**
@@ -46,21 +47,22 @@ public class OpenLigaDbParser {
 	public List<FootballTeam> getBundesligaTable() {
 		// create new List
 		List<FootballTeam> table = new ArrayList<FootballTeam>();
-		String season = "";
 
-		String jsonResponseCurrentMatchDay = getOpenLigaResponse(urlBundesliga1Matches);
-		JSONArray jsonArray = new JSONArray(jsonResponseCurrentMatchDay);
-		String leagueName = jsonArray.getJSONObject(0).getString("LeagueName");
-		Matcher m = leagueNamePattern.matcher(leagueName); 
-		if (m.matches()) {
-			season = m.group(1).trim();
-		} else {
-			System.out.print("\n** Error when parsing current season of Bundesliga **\n");
-			return table;
+		if (bundesligaSeason == 0) {
+			String jsonResponseCurrentMatchDay = getOpenLigaResponse(urlBundesliga1Matches);
+			JSONArray jsonArray = new JSONArray(jsonResponseCurrentMatchDay);
+			String leagueName = jsonArray.getJSONObject(0).getString("LeagueName");
+			Matcher m = leagueNamePattern.matcher(leagueName); 
+			if (m.matches()) {
+				String season = m.group(1).trim();
+				this.bundesligaSeason = Integer.valueOf(season);
+			} else {
+				System.out.print("\n** Error when parsing current season of Bundesliga **\n");
+				return table;
+			}
 		}
-
 		// get table from OpenLigaDb response
-		String jsonResponse = getOpenLigaResponse(urlBundesliga1Table2019 + season);
+		String jsonResponse = getOpenLigaResponse(urlBundesliga1Table2019 + this.bundesligaSeason);
 		table = getTableFromJsonResponse(jsonResponse);			
 
 		return table;		
