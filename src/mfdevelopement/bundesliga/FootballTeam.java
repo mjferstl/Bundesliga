@@ -24,7 +24,11 @@ public class FootballTeam {
 	}
 
 	public String getTeamName() {
-		return teamName;
+		String name = "";
+		if (teamName != null) {
+			name = this.teamName;
+		}
+		return name;
 	}
 
 	public void setTeamName(String teamName) {

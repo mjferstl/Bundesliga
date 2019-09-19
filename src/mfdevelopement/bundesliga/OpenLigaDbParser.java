@@ -24,6 +24,8 @@ public class OpenLigaDbParser {
 	// - Strings
 	private final String urlBundesliga1Matches = "https://www.openligadb.de/api/getmatchdata/bl1";
 	private final String urlBundesliga1Table2019 = "https://www.openligadb.de/api/getbltable/bl1/";
+	private String jsonResponseTable = "";
+	private String jsonResponseMatches = "";
 
 	public static final int VALUE_NOT_SET = -999;
 	private int bundesligaSeason = 0;
@@ -39,6 +41,7 @@ public class OpenLigaDbParser {
 
 		// get matches from OpenLigaDb response
 		String jsonResponse = getOpenLigaResponse(urlBundesliga1Matches);
+		this.jsonResponseMatches = jsonResponse;
 		matches = getMatchesFromJsonResponse(jsonResponse);
 
 		return matches;
@@ -63,6 +66,7 @@ public class OpenLigaDbParser {
 		}
 		// get table from OpenLigaDb response
 		String jsonResponse = getOpenLigaResponse(urlBundesliga1Table2019 + this.bundesligaSeason);
+		this.jsonResponseTable = jsonResponse;
 		table = getTableFromJsonResponse(jsonResponse);			
 
 		return table;		
@@ -146,7 +150,7 @@ public class OpenLigaDbParser {
 	 * @param jsonResponse
 	 * @return List of objects of type "Match"
 	 */
-	private List<Match> getMatchesFromJsonResponse(String jsonResponse) {
+	public List<Match> getMatchesFromJsonResponse(String jsonResponse) {
 
 		List<Match> m = new ArrayList<Match>();
 		// Parse JSON Response		
@@ -349,7 +353,7 @@ public class OpenLigaDbParser {
 	}
 
 
-	private List<FootballTeam> getTableFromJsonResponse(String jsonResponse) {
+	public List<FootballTeam> getTableFromJsonResponse(String jsonResponse) {
 
 		// create new List
 		List<FootballTeam> table = new ArrayList<FootballTeam>();
@@ -411,6 +415,10 @@ public class OpenLigaDbParser {
 		}
 	}
 
+	/**
+	 * print the loaded Bundesliga table to the console
+	 * @param table: List of objects FootballTeam
+	 */
 	public void printTable(List<FootballTeam> table) {
 
 		final int STRING_WIDTH_RANK = 3;
@@ -453,5 +461,33 @@ public class OpenLigaDbParser {
 
 		// add empty line at bottom
 		System.out.print("\n");
+	}
+	
+	/**
+	 * get JSON response for Bundesliga table as String
+	 * @return String containing the JSON response for the current Bundesliga table
+	 */
+	public String getJsonResponseTable() {
+		
+		// if no response is loaded, get it from the internet
+		if (this.jsonResponseTable == null || this.jsonResponseTable == "") {
+			getBundesligaTable();
+		}
+		
+		return this.jsonResponseTable;
+	}
+	
+	/**
+	 * get JSON response for current Bundesliga matches as String
+	 * @return String containing the JSON response for the current Bundesliga matches
+	 */
+	public String getJsonResponseMatches() {
+		
+		// if no response is loaded, get it from the internet
+		if (this.jsonResponseMatches == null || this.jsonResponseMatches == "") {
+			getCurrentBundesligaMatches();
+		}
+		
+		return this.jsonResponseMatches;
 	}
 }

@@ -56,6 +56,12 @@ public class Bundesliga {
 		openLigaDbParser.printMatches(matchesList);
 	}
 
+	/**
+	 * get the FootballTeam at a specific position of the Bundesliga table
+	 * @param position: position of the desired FootballTeam; starts at 1
+	 * @return Object of type FootballTeam
+	 * @throws IndexOutOfBoundsException: if the desired position is out of range of the table
+	 */
 	public FootballTeam getTablePos(int position) throws IndexOutOfBoundsException{
 
 		// check if there is a item at position
@@ -66,5 +72,20 @@ public class Bundesliga {
 		// return FootballTeam at position
 		return table.get(position-1);
 	}
-
+	
+	/**
+	 * get the number of items in the loaded Bundesliga table
+	 * @return number of items in the Bundesliga table
+	 */
+	public int getTableSize() {
+		return table.size();
+	}
+	
+	/**
+	 * get the OpenLigaDbParser object for using it's functions trough the Bundesliga object
+	 * @return OpenLigaDbParser object
+	 */
+	public OpenLigaDbParser getOpenLigaDbParser() {
+		return this.openLigaDbParser;
+	}
 }
