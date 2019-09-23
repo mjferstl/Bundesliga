@@ -4,10 +4,10 @@
 Das Projekt bietet das Java-Paket `mfedevelopement.bundesliga`, das Daten von [OpenLigaDB](https://www.openligadb.de/) empfängt und in Klassen und Listen sortiert. Dabei werden die aktuellen Daten der Bundesliga-Tabelle sowie die aktuellen Begegnungen empfangen und verarbeitet.
 
 Das Paket enthält folgende Klassen
-- `Bundesliga` (Hautpklasse, über die die Funktionen aufgerufen werden)
-- `FootballTeam` (Ein Objekt dieser Klasse enthält die Daten eines Teams)
-- `Match` (Klasse, die zwei Teams und Informationen zu einem Spiel enthält)
-- `MatchGoal` (Klasse, das Daten zu einem erzielten Tor enthält)
+- `Bundesliga` (Hautpklasse, über die die Funktionsaufrufe gesteuert werden)
+- `FootballTeam` (Klasse zum Speichern der Daten eines Teams)
+- `Match` (Klasse, die zwei Teams und Informationen zu einem Fußballspiel enthält)
+- `MatchGoal` (Klasse zum Speichern der Daten zu einem erzielten Tor)
 - `OpenLigaDbParser` (Klasse zum Senden der Requests an [OpenLigaDB](https://www.openligadb.de/) und Verarbeiten der Responses)
 
 ## Verwendung
