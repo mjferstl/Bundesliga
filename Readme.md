@@ -3,6 +3,8 @@
 ## Inhalt des Pakets
 Das Projekt bietet das Java-Paket `mfdevelopement.bundesliga`, das Daten von [OpenLigaDB](https://www.openligadb.de/) empfängt und in Klassen und Listen sortiert. Dabei werden die aktuellen Daten der Bundesliga-Tabelle sowie die aktuellen Begegnungen empfangen und verarbeitet.
 
+Das Paket referenziert auf `org.json`, das im JAR-File [`json_20190722.jar`](https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar), enthalten ist. Weitere Informationen enthält das [GitHub-Repository](https://github.com/stleary/JSON-java) von [stleary](https://github.com/stleary).
+
 Das Paket enthält folgende Klassen
 - `Bundesliga` (Hautpklasse, über die die Funktionsaufrufe gesteuert werden)
 - `FootballTeam` (Klasse zum Speichern der Daten eines Teams)
