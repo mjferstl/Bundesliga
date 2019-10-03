@@ -6,25 +6,28 @@ import java.util.List;
 public class Match {
 	
 	private FootballTeam homeTeam, awayTeam;
-	//private String homeTeam, awayTeam;
+	
 	private int matchId;
-	private int goalsHomeTeamFinal = OpenLigaDbParser.VALUE_NOT_SET, goalsAwayTeamFinal = OpenLigaDbParser.VALUE_NOT_SET;
-	private int goalsHomeTeamHalf = OpenLigaDbParser.VALUE_NOT_SET, goalsAwayTeamHalf = OpenLigaDbParser.VALUE_NOT_SET;
+	private final static int VALUE_NOT_SET = OpenLigaDbParser.VALUE_NOT_SET;
+	private int goalsHomeTeamFinal = VALUE_NOT_SET, goalsAwayTeamFinal = VALUE_NOT_SET;
+	private int goalsHomeTeamHalf = VALUE_NOT_SET, goalsAwayTeamHalf = VALUE_NOT_SET;
+	
 	private List<MatchGoal> matchGoals = new ArrayList<MatchGoal>();
+	
 	private String leagueName;
+	
 	private boolean isFinished;
+	
 	private Calendar matchTime;
 	
-	public Match() {
-		// nothing defined yet
-	}
+	public Match() {}
 	
 	@Override
 	public String toString() {
-		String encounterString = String.format("%-40s", this.homeTeam.toString() + " vs. " + this.awayTeam.toString());
+		String encounterString = String.format("%-40s", this.homeTeam.getTeamName() + " vs. " + this.awayTeam.getTeamName());
 		
 		String resultString;
-		if ((this.goalsHomeTeamFinal != OpenLigaDbParser.VALUE_NOT_SET) && (this.goalsAwayTeamFinal != OpenLigaDbParser.VALUE_NOT_SET))
+		if ((this.goalsHomeTeamFinal != VALUE_NOT_SET) && (this.goalsAwayTeamFinal != VALUE_NOT_SET))
 			resultString = String.format("%5s", String.format("%2s", this.goalsHomeTeamFinal) + "-" + this.goalsAwayTeamFinal);
 		else {
 			resultString = "";
@@ -89,7 +92,7 @@ public class Match {
 		this.isFinished = isFinished;
 	}
 
-	public Calendar getMatchTime() {
+	public Calendar getMatchTime() throws NullPointerException{
 		return matchTime;
 	}
 

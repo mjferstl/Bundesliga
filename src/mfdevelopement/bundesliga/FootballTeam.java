@@ -2,11 +2,14 @@ package mfdevelopement.bundesliga;
 
 public class FootballTeam {
 	
+	// Strings
 	private String teamName, shortName;
 	private String iconUrl;
-	private int points = -1;
-	private int goals, opponentGoals, matches, matchesWon, matchesLost, matchesDraw, goalDiff;
 	
+	public final static String STRING_SEPARATOR = " | ";
+	
+	// Integers
+	public final static int VALUE_NOT_SET = OpenLigaDbParser.VALUE_NOT_SET;	
 	public final static int STRING_WIDTH_TEAMNAME = 35;
 	public final static int STRING_WIDTH_POINTS = 3;
 	public final static int STRING_WIDTH_GOALS = 3;
@@ -15,7 +18,11 @@ public class FootballTeam {
 	public final static int STRING_WIDTH_MATCHES_DRAW = 2;
 	public final static int STRING_WIDTH_MATCHES_LOST = 2;
 	public final static int STRING_WIDTH_GOALS_DIFF = 3;
-	public final static String STRING_SEPARATOR = " | ";
+	
+	private int points = VALUE_NOT_SET;
+	private int goals = VALUE_NOT_SET, opponentGoals = VALUE_NOT_SET, matches = VALUE_NOT_SET, matchesWon = VALUE_NOT_SET;
+	private int matchesLost = VALUE_NOT_SET, matchesDraw = VALUE_NOT_SET, goalDiff = VALUE_NOT_SET;
+	
 	
 	public FootballTeam() {}
 	
@@ -25,7 +32,7 @@ public class FootballTeam {
 
 	public String getTeamName() {
 		String name = "";
-		if (teamName != null) {
+		if (this.teamName != null) {
 			name = this.teamName;
 		}
 		return name;
@@ -36,7 +43,11 @@ public class FootballTeam {
 	}
 
 	public String getShortName() {
-		return shortName;
+		String name = ""; 
+		if (this.shortName != null) {
+			name = this.shortName;
+		}
+		return name;
 	}
 
 	public void setShortName(String shortName) {
@@ -44,7 +55,11 @@ public class FootballTeam {
 	}
 
 	public String getIconUrl() {
-		return iconUrl;
+		String url = "";
+		if (this.iconUrl != null) {
+			url = this.iconUrl;
+		}
+		return url;
 	}
 
 	public void setIconUrl(String iconUrl) {
@@ -115,8 +130,8 @@ public class FootballTeam {
 		this.opponentGoals = opponentGoals;
 	}
 
-	@Override
-	public String toString() {
+	
+	public String toTableString() {
 		if (this.points == -1) {
 			return this.teamName;
 		} else {
@@ -134,5 +149,12 @@ public class FootballTeam {
 					+ sep + matchesWon + sep + matchesDraw + sep + matchesLost
 					+ sep + goals; 
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + this.teamName + "," + this.points + " points, " + 
+				this.goals + ":" + this.opponentGoals + " goals," + this.goalDiff + " goals difference, " + 
+				this.matches + " matches, " + this.matchesWon + " won, " + this.matchesDraw + " draw, " + this.matchesLost + " lost]";
 	}
 }

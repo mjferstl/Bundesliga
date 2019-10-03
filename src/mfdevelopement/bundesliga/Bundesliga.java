@@ -1,14 +1,21 @@
 package mfdevelopement.bundesliga;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Bundesliga {
 
 	private List<FootballTeam> table = new ArrayList<FootballTeam>();
 	private List<Match> matches = new ArrayList<Match>();
+	private List<GoalGetter> goalGetters = new ArrayList<GoalGetter>();
 
 	private OpenLigaDbParser openLigaDbParser = new OpenLigaDbParser();
+	
+	public final static int VALUE_NOT_SET = OpenLigaDbParser.VALUE_NOT_SET;
+
+	private int gameDay = VALUE_NOT_SET;
+	private int season = VALUE_NOT_SET;
 
 
 	public Bundesliga() {
@@ -25,6 +32,7 @@ public class Bundesliga {
 
 	public void updateTable() {
 		this.table = openLigaDbParser.getBundesligaTable();
+		setSeason(openLigaDbParser.getCurrentSeason());
 	}
 
 	public List<Match> getMatches() {
@@ -36,8 +44,29 @@ public class Bundesliga {
 		return this.matches;
 	}
 
+	public List<GoalGetter> getGoalGetters() {
+		// get data from OpenLigaDB, if nothing is loaded yet
+		if (this.goalGetters.size() == 0) {
+			updateGoalGetters();
+		}
+		return this.goalGetters;
+	}
+	
+	public int getGameDay() {
+		this.gameDay = openLigaDbParser.getBundesligaGameDay();
+		return this.gameDay;
+	}
+	
+	public Date getLastUpdateTimeCurrentGameDay() {
+		return openLigaDbParser.getUpdateTimeCurrentGameDay();
+	}
+
 	public void updateMatches() {
 		this.matches = openLigaDbParser.getCurrentBundesligaMatches();
+	}
+
+	public void updateGoalGetters() {
+		this.goalGetters = openLigaDbParser.getBundesligaGoalGetters();
 	}
 
 	public void printTable() {
@@ -72,7 +101,7 @@ public class Bundesliga {
 		// return FootballTeam at position
 		return table.get(position-1);
 	}
-	
+
 	/**
 	 * get the number of items in the loaded Bundesliga table
 	 * @return number of items in the Bundesliga table
@@ -80,7 +109,7 @@ public class Bundesliga {
 	public int getTableSize() {
 		return table.size();
 	}
-	
+
 	/**
 	 * get the OpenLigaDbParser object for using it's functions trough the Bundesliga object
 	 * @return OpenLigaDbParser object
@@ -88,4 +117,17 @@ public class Bundesliga {
 	public OpenLigaDbParser getOpenLigaDbParser() {
 		return this.openLigaDbParser;
 	}
+
+	private void setSeason(int season) {
+		this.season = season;
+	}
+
+	public int getSeason() {
+		if (this.season == VALUE_NOT_SET) {
+			updateTable();
+		}
+		return this.season;
+	}
+	
+	
 }
