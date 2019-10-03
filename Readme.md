@@ -13,7 +13,7 @@ Das Paket enthält folgende Klassen
 - `OpenLigaDbParser` (Klasse zum Senden der Requests an [OpenLigaDB](https://www.openligadb.de/) und Verarbeiten der Responses)
 
 ## Verwendung
-Die Datei `BundesligaDemo.java` zeigt einige Beispiele zur Verwendung der Bundesliga-Klasse. Einige dieser Beispiele sind im folgenden näher beschrieben.
+Die Datei [`BundesligaDemo.java`](https://github.com/mjferstl/Bundesliga/blob/master/src/mfdevelopement/bundesliga/BundesligaDemo.java) zeigt einige Beispiele zur Verwendung der Bundesliga-Klasse. Einige dieser Beispiele sind im folgenden näher beschrieben.
 
 Um die aktuelle Tabelle und sowie die Spiele der Bundesliga zu erhalten, wird zuerst ein neues Objekt vom Typ `Bundesliga` erzeugt
 ```
